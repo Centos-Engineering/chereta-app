@@ -1,4 +1,4 @@
-import 'package:auction_app/views/homepage/home_screen.dart';
+import 'package:auction_app/views/home_page/home_screen.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:otp_text_field/otp_field.dart';

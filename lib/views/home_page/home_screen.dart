@@ -1,4 +1,7 @@
-import 'package:auction_app/views/homepage/details_page/details_screen.dart';
+import 'package:auction_app/model/tender_models.dart';
+import 'package:auction_app/navigation/drawer.dart';
+import 'package:auction_app/views/home_page/details_page/details_screen.dart';
+import 'package:auction_app/views/settings_page/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_grid/responsive_grid.dart';
@@ -14,45 +17,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: Drawer(
-        elevation: 0,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-              topRight: Radius.circular(0), bottomRight: Radius.circular(0)),
-        ),
-        child: ListView(
-          shrinkWrap: true,
-          children: [
-            const UserAccountsDrawerHeader(
-                accountName: Text("Aman the baiter"),
-                accountEmail: Text('eyosi69@gmail.com')),
-            ListTile(
-              onTap: () {},
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-            ),
-            const Divider(),
-            ListTile(
-              onTap: () {},
-              leading: const Icon(Icons.save_outlined),
-              title: const Text('Saved Tenders'),
-            ),
-            const Divider(),
-            ListTile(
-              onTap: () {},
-              leading: const Icon(Icons.settings_outlined),
-              title: const Text('Settings'),
-            ),
-            const Divider(),
-            ListTile(
-              onTap: () {},
-              leading: const Icon(Icons.logout_outlined),
-              title: const Text('Logout'),
-            ),
-            const Divider(),
-          ],
-        ),
-      ),
+      drawer: const DrawerScreen(),
       appBar: AppBar(
         title: const Text(
           'Tenders',
@@ -68,7 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(),
+        physics: const ClampingScrollPhysics(),
         child: Column(
           children: [
             const SizedBox(
@@ -262,9 +227,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     builder: (context) =>
                                         const DetailsScreen()));
                           },
-                          title: const Text(
-                            'ያገለገሉ ልዩ ልዩ ንብረቶች በግልጽ ጨረታ ለመሸጥ የተዘጋጀ የጨረታ ሰነድ ቁጥር PPS/NVP-5FBI/01/02/2016',
-                            style: TextStyle(fontWeight: FontWeight.w700),
+                          title: Text(
+                            Tenders.tenders[index].name,
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -282,19 +247,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Posted 10 hours ago',
+                                Tenders.tenders[index].time,
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.6)),
                               ),
                               const SizedBox(
                                 height: 30,
                               ),
-                              const Text(
-                                'Federal Prisoners Commission',
-                                style: TextStyle(color: Colors.black),
+                              Text(
+                                Tenders.tenders[index].poster,
+                                style: const TextStyle(color: Colors.black),
                               ),
                               Text(
-                                'Security',
+                                Tenders.tenders[index].category,
                                 style: TextStyle(
                                     color: Colors.black.withOpacity(0.6)),
                               ),
@@ -302,7 +267,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 height: 30,
                               ),
                               const Text('Bid Closing Date'),
-                              Text('Dec 13,2023 9:30 AM',
+                              Text(Tenders.tenders[index].closingDate,
                                   style: TextStyle(
                                       color: Colors.black.withOpacity(0.6))),
                             ],
@@ -314,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(),
-                itemCount: 10)
+                itemCount: Tenders.tenders.length)
           ],
         ),
       ),
