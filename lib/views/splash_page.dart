@@ -1,6 +1,5 @@
 import 'package:auction_app/views/auth/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:splash_view/source/presentation/pages/pages.dart';
 import 'package:splash_view/splash_view.dart';
 
 class SplashPage extends StatelessWidget {
