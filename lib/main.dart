@@ -1,7 +1,12 @@
+import 'dart:developer';
+
+import 'package:auction_app/dbhelper/mongodb.dart';
 import 'package:auction_app/views/splash_page.dart';
 import 'package:flutter/material.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MongoDBConnection.connect();
   runApp(const MyApp());
 }
 

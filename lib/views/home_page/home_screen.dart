@@ -1,7 +1,8 @@
+import 'package:auction_app/dbhelper/mongodb.dart';
+import 'package:auction_app/model/mongo_db_model.dart';
 import 'package:auction_app/model/tender_models.dart';
 import 'package:auction_app/navigation/drawer.dart';
 import 'package:auction_app/views/home_page/details_page/details_screen.dart';
-import 'package:auction_app/views/settings_page/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_grid/responsive_grid.dart';
@@ -210,85 +211,96 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            ListView.separated(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.all(8),
-                itemBuilder: (BuildContext context, int index) {
-                  return Card(
-                    elevation: 0,
-                    child: Column(
-                      children: [
-                        ListTile(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const DetailsScreen()));
-                          },
-                          title: Text(
-                            Tenders.tenders[index].name,
-                            style: const TextStyle(fontWeight: FontWeight.w700),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: ElevatedButton(
-                              onPressed: () {},
-                              style: ElevatedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  side: const BorderSide(color: Colors.cyan),
-                                  shape: const CircleBorder()),
-                              child: const Icon(
-                                Icons.favorite_border_outlined,
-                                color: Colors.cyan,
-                              )),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                Tenders.tenders[index].time,
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              Text(
-                                Tenders.tenders[index].poster,
-                                style: const TextStyle(color: Colors.black),
-                              ),
-                              Text(
-                                Tenders.tenders[index].category,
-                                style: TextStyle(
-                                    color: Colors.black.withOpacity(0.6)),
-                              ),
-                              const SizedBox(
-                                height: 30,
-                              ),
-                              const Text('Bid Closing Date'),
-                              Text(Tenders.tenders[index].closingDate,
-                                  style: TextStyle(
-                                      color: Colors.black.withOpacity(0.6))),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-                separatorBuilder: (BuildContext context, int index) =>
-                    const Divider(),
-                itemCount: Tenders.tenders.length)
+            FutureBuilder(
+              future: MongoDBConnection.getData(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else {
+                  if (snapshot.hasData) {
+                    var totalData = snapshot.data!.length;
+                    return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        padding: const EdgeInsets.all(8),
+                        itemBuilder: (BuildContext context, int index) {
+                          return listOfTenders(
+                              MongoDbModel.fromJson(snapshot.data![index]));
+                        },
+                        separatorBuilder: (BuildContext context, int index) =>
+                            const Divider(),
+                        itemCount: snapshot.data!.length);
+                  } else {
+                    return const Center(
+                      child: Text("No data available"),
+                    );
+                  }
+                }
+              },
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget listOfTenders() {
-    return const Row(
-      children: [],
+  Widget listOfTenders(MongoDbModel data) {
+    return Card(
+      elevation: 0,
+      child: Column(
+        children: [
+          ListTile(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const DetailsScreen()));
+            },
+            title: Text(
+              data.name,
+              style: const TextStyle(fontWeight: FontWeight.w700),
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+            ),
+            trailing: ElevatedButton(
+                onPressed: () {},
+                style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    side: const BorderSide(color: Colors.cyan),
+                    shape: const CircleBorder()),
+                child: const Icon(
+                  Icons.favorite_border_outlined,
+                  color: Colors.cyan,
+                )),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  data.time,
+                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  data.poster,
+                  style: const TextStyle(color: Colors.black),
+                ),
+                Text(
+                  data.category,
+                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                ),
+                const SizedBox(
+                  height: 30,
+                ),
+                const Text('Bid Closing Date'),
+                Text(data.closingDate,
+                    style: TextStyle(color: Colors.black.withOpacity(0.6))),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

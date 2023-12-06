@@ -1,6 +1,5 @@
 import 'package:auction_app/views/auth/login_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:splash_view/source/presentation/pages/pages.dart';
 import 'package:splash_view/splash_view.dart';
 
 class SplashPage extends StatelessWidget {
@@ -12,8 +11,6 @@ class SplashPage extends StatelessWidget {
       body: SplashView(
         done: Done(
           const LoginScreen(),
-          animationDuration: const Duration(seconds: 2),
-          curve: Curves.bounceIn,
         ),
         logo: Image.asset('assets/images/splash_page.png'),
         title: const Text(
@@ -21,22 +18,20 @@ class SplashPage extends StatelessWidget {
           textAlign: TextAlign.center,
           style: TextStyle(fontSize: 20, color: Colors.black),
         ),
-        subtitle: Padding(
-          padding: const EdgeInsets.only(top: 30),
+        subtitle: const Padding(
+          padding: EdgeInsets.only(top: 30),
           child: Text(
             'Where Efficiency Meets Simplicity!',
             style: TextStyle(
-                fontSize: 20,
-                color: Colors.grey[500],
-                fontWeight: FontWeight.w300),
+                fontSize: 20, color: Colors.white, fontWeight: FontWeight.w300),
           ),
         ),
         gradient: const LinearGradient(
             begin: Alignment.centerLeft,
             end: Alignment.bottomRight,
             colors: <Color>[
-              Color.fromARGB(255, 255, 255, 255),
-              Color.fromARGB(255, 151, 215, 242),
+              Color.fromARGB(255, 24, 3, 255),
+              Color.fromARGB(255, 154, 242, 151),
             ]),
       ),
       // child: Container(
