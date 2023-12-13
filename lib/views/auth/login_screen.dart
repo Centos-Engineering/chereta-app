@@ -1,6 +1,10 @@
+import 'package:auction_app/core/blocs/auth_bloc/auth_bloc.dart';
 import 'package:auction_app/views/auth/signup_screen.dart';
+import 'package:auction_app/views/homepage/home_screen.dart';
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -10,6 +14,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController phoneController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +25,7 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Padding(
           padding: const EdgeInsets.only(top: 70.0, left: 20.0, right: 20.0),
           child: Form(
+            key: _formKey,
             child: Column(
               children: [
                 const Center(
@@ -53,23 +61,27 @@ class _LoginScreenState extends State<LoginScreen> {
                   height: 40,
                 ),
                 TextFormField(
+                    controller: phoneController,
                     decoration: const InputDecoration(
                         border: UnderlineInputBorder(),
                         hintText: 'Phone Number',
                         hintStyle: TextStyle(
                             color: Colors.black, fontWeight: FontWeight.w300))),
                 TextFormField(
+                    controller: passwordController,
+                    obscureText: true,
                     decoration: InputDecoration(
-                  border: const UnderlineInputBorder(),
-                  hintText: 'Password',
-                  hintStyle: const TextStyle(
-                      color: Colors.black, fontWeight: FontWeight.w300),
-                  suffixIcon: GestureDetector(
-                    child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Image.asset('assets/images/show_password.png')),
-                  ),
-                )),
+                      border: const UnderlineInputBorder(),
+                      hintText: 'Password',
+                      hintStyle: const TextStyle(
+                          color: Colors.black, fontWeight: FontWeight.w300),
+                      suffixIcon: GestureDetector(
+                        child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child:
+                                Image.asset('assets/images/show_password.png')),
+                      ),
+                    )),
                 const SizedBox(
                   height: 20,
                 ),
@@ -83,22 +95,56 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(
                   height: 70,
                 ),
-                SizedBox(
-                  height: 50,
-                  width: double.infinity,
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // <-- Radius
-                        ),
-                        elevation: 0,
-                        backgroundColor: Colors.cyan,
-                      ),
-                      onPressed: () {},
-                      child: const Text(
-                        'LOGIN',
-                        style: TextStyle(color: Colors.white),
-                      )),
+                BlocListener<AuthBloc, AuthState>(
+                  listener: (context, state) {
+                    if (state is AuthError) {
+                      CherryToast.error(title: Text(state.error));
+                    } else if (state is Authenticated) {
+                      print("Authenticated");
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen()));
+                    }
+                  },
+                  child: BlocBuilder<AuthBloc, AuthState>(
+                      builder: (context, state) {
+                    if (state is AuthInitial || state is NotAuthenticated) {
+                      return SizedBox(
+                        height: 50,
+                        width: double.infinity,
+                        child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(10), // <-- Radius
+                              ),
+                              elevation: 0,
+                              backgroundColor: Colors.cyan,
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState!.validate()) {
+                                final authBloc =
+                                    BlocProvider.of<AuthBloc>(context);
+                                authBloc.add(LogIn(
+                                    email: phoneController.value.text,
+                                    password: passwordController.value.text,
+                                    staySignedIn: true));
+                                debugPrint(authBloc.state.toString());
+                              }
+                            },
+                            child: const Text(
+                              'LOGIN',
+                              style: TextStyle(color: Colors.white),
+                            )),
+                      );
+                    } else if (state is AuthLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    return Container();
+                  }),
                 ),
                 Align(
                     alignment: Alignment.center,

@@ -47,11 +47,11 @@ class OTPVerificationScreen extends StatelessWidget {
                 padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 10),
                 child: OTPTextField(
                   onChanged: (pin) {
-                    print('onCompleted: $pin ');
+                    debugPrint('onCompleted: $pin ');
                     try {
-                      print('verification successful');
+                      debugPrint('verification successful');
                     } catch (ex) {
-                      print(ex);
+                      debugPrint(ex.toString());
                     }
                   },
                   outlineBorderRadius: 10,
