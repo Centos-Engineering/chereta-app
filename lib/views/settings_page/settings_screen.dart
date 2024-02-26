@@ -1,5 +1,6 @@
 import 'package:auction_app/navigation/drawer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -175,26 +176,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: ListTile(
                   title: Text(
                     "Privacy policy and terms of service",
-                    style: TextStyle(
-                      color: Colors.black.withOpacity(0.9),
-                      fontSize: 13,
-                    ),
-                  ),
-                  trailing: const Icon(
-                    Icons.arrow_forward_ios_outlined,
-                    size: 13,
-                    color: Color(0xff636AB1),
-                  ),
-                ),
-              ),
-            ),
-            InkWell(
-              onTap: () {},
-              child: Card(
-                elevation: 0,
-                child: ListTile(
-                  title: Text(
-                    "Logout",
                     style: TextStyle(
                       color: Colors.black.withOpacity(0.9),
                       fontSize: 13,

@@ -1,6 +1,7 @@
-import 'package:auction_app/views/auth/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:splash_view/splash_view.dart';
+
+import 'auth/login/login_page.dart';
 
 class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
@@ -10,7 +11,7 @@ class SplashPage extends StatelessWidget {
     return Scaffold(
       body: SplashView(
         done: Done(
-          const LoginScreen(),
+          const LoginPage(),
         ),
         logo: Image.asset('assets/images/splash_page.png'),
         title: const Text(

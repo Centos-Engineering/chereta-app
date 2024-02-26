@@ -84,7 +84,7 @@ class _SavedTendersScreenState extends State<SavedTendersScreen> {
                 },
                 separatorBuilder: (BuildContext context, int index) =>
                     const Divider(),
-                itemCount: 10)
+                itemCount: 2)
           ],
         ),
       ),

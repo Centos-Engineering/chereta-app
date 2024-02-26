@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:auction_app/dbhelper/connection_string.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class MongoDBConnection {
@@ -9,7 +10,7 @@ class MongoDBConnection {
     db = await Db.create(mongoConURL);
 
     await db.open();
-    print(db.toString());
+    debugPrint(db.toString());
     inspect(db);
     userCollection = db.collection(userCollectionName);
   }

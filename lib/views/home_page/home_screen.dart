@@ -3,12 +3,18 @@ import 'package:auction_app/model/mongo_db_model.dart';
 import 'package:auction_app/model/tender_models.dart';
 import 'package:auction_app/navigation/drawer.dart';
 import 'package:auction_app/views/home_page/details_page/details_screen.dart';
+import 'package:cherry_toast/cherry_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:responsive_grid/responsive_grid.dart';
 
+import '../../blocs/auctions_bloc/auctions_bloc.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  static Page page() => const MaterialPage<void>(child: HomeScreen());
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -211,30 +217,97 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            FutureBuilder(
-              future: MongoDBConnection.getData(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
+            BlocBuilder<AuctionsBloc, AuctionsState>(
+              builder: (context, state) {
+                if (state is AuctionsSuccess) {
+                  return ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.all(8),
+                      itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          elevation: 0,
+                          child: Column(
+                            children: [
+                              ListTile(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DetailsScreen()));
+                                },
+                                title: Text(
+                                  state.auctionDataModel[index].displayName,
+                                  style: const TextStyle(
+                                      fontWeight: FontWeight.w700),
+                                  maxLines: 3,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                trailing: ElevatedButton(
+                                    onPressed: () {},
+                                    style: ElevatedButton.styleFrom(
+                                        foregroundColor: Colors.white,
+                                        side: const BorderSide(
+                                            color: Colors.cyan),
+                                        shape: const CircleBorder()),
+                                    child: const Icon(
+                                      Icons.favorite_border_outlined,
+                                      color: Colors.cyan,
+                                    )),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Posted 10 hours ago',
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6)),
+                                    ),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    Text(
+                                      state.auctionDataModel[index].poster,
+                                      style:
+                                          const TextStyle(color: Colors.black),
+                                    ),
+                                    Text(
+                                      state.auctionDataModel[index].category,
+                                      style: TextStyle(
+                                          color: Colors.black.withOpacity(0.6)),
+                                    ),
+                                    const SizedBox(
+                                      height: 30,
+                                    ),
+                                    const Text('Bid Closing Date'),
+                                    Text(
+                                        state.auctionDataModel[index]
+                                            .closingDate,
+                                        style: TextStyle(
+                                            color:
+                                                Colors.black.withOpacity(0.6))),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      separatorBuilder: (BuildContext context, int index) =>
+                          const Divider(),
+                      itemCount: state.auctionDataModel.length);
+                } else if (state is AuctionsLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (state is AuctionsFailure) {
+                  return Center(
+                    child: Text(state.message.toString()),
+                  );
                 } else {
-                  if (snapshot.hasData) {
-                    var totalData = snapshot.data!.length;
-                    return ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(8),
-                        itemBuilder: (BuildContext context, int index) {
-                          return listOfTenders(
-                              MongoDbModel.fromJson(snapshot.data![index]));
-                        },
-                        separatorBuilder: (BuildContext context, int index) =>
-                            const Divider(),
-                        itemCount: snapshot.data!.length);
-                  } else {
-                    return const Center(
-                      child: Text("No data available"),
-                    );
-                  }
+                  return const Center(
+                    child: Text("Unknown State"),
+                  );
                 }
               },
             )
@@ -245,63 +318,75 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget listOfTenders(MongoDbModel data) {
-    return Card(
-      elevation: 0,
-      child: Column(
-        children: [
-          ListTile(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const DetailsScreen()));
-            },
-            title: Text(
-              data.name,
-              style: const TextStyle(fontWeight: FontWeight.w700),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis,
-            ),
-            trailing: ElevatedButton(
-                onPressed: () {},
-                style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    side: const BorderSide(color: Colors.cyan),
-                    shape: const CircleBorder()),
-                child: const Icon(
-                  Icons.favorite_border_outlined,
-                  color: Colors.cyan,
-                )),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  data.time,
-                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
+    return BlocBuilder<AuctionsBloc, AuctionsState>(builder: (context, state) {
+      if (state is AuctionsSuccess) {
+        return Card(
+          elevation: 0,
+          child: Column(
+            children: [
+              ListTile(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const DetailsScreen()));
+                },
+                title: Text(
+                  data.name,
+                  style: const TextStyle(fontWeight: FontWeight.w700),
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(
-                  height: 30,
+                trailing: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        side: const BorderSide(color: Colors.cyan),
+                        shape: const CircleBorder()),
+                    child: const Icon(
+                      Icons.favorite_border_outlined,
+                      color: Colors.cyan,
+                    )),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data.time,
+                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    Text(
+                      data.poster,
+                      style: const TextStyle(color: Colors.black),
+                    ),
+                    Text(
+                      data.category,
+                      style: TextStyle(color: Colors.black.withOpacity(0.6)),
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    const Text('Bid Closing Date'),
+                    Text(data.closingDate,
+                        style: TextStyle(color: Colors.black.withOpacity(0.6))),
+                  ],
                 ),
-                Text(
-                  data.poster,
-                  style: const TextStyle(color: Colors.black),
-                ),
-                Text(
-                  data.category,
-                  style: TextStyle(color: Colors.black.withOpacity(0.6)),
-                ),
-                const SizedBox(
-                  height: 30,
-                ),
-                const Text('Bid Closing Date'),
-                Text(data.closingDate,
-                    style: TextStyle(color: Colors.black.withOpacity(0.6))),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
+      } else if (state is AuctionsLoading) {
+        return const Center(
+          child: CircularProgressIndicator(),
+        );
+      } else {
+        return const Center(
+          child: Text("Error has occured"),
+        );
+      }
+    });
   }
 
   Widget search() {

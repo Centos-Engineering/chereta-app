@@ -1,6 +1,7 @@
+import 'package:auction_app/blocs/auth_bloc/auth_bloc.dart';
 import 'package:auction_app/views/saved_tenders/saved_tenders_screen.dart';
 import 'package:flutter/material.dart';
-
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../views/home_page/home_screen.dart';
 import '../views/settings_page/settings_screen.dart';
 
@@ -53,7 +54,9 @@ class DrawerScreen extends StatelessWidget {
           ),
           const Divider(),
           ListTile(
-            onTap: () {},
+            onTap: () {
+              context.read<AuthBloc>().add(AuthLogOutRequested());
+            },
             leading: const Icon(Icons.logout_outlined),
             title: const Text('Logout'),
           ),
